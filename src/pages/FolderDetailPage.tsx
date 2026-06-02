@@ -7,6 +7,7 @@ import {
     FileVideo,
     FileImage,
     FileArchive,
+    Trash2,
 } from "lucide-react"
 
 import {
@@ -35,15 +36,51 @@ import { folderStructure } from "@/components/upload/folder-data"
 
 import { slugify } from "@/lib/slug"
 import { downloadFile } from "@/lib/download-file"
+import Swal from "sweetalert2"
+import { BASE_URL } from "@/utils/constant"
 
+const getFileExtension = (
+    type: string,
+    name: string
+) => {
+    //
+    // PRIORITAS DARI NAMA FILE
+    //
+    const extension =
+        name.split(".").pop()
 
+    if (extension) {
+        return extension.toUpperCase()
+    }
+
+    //
+    // FALLBACK MIME TYPE
+    //
+    return (
+        type.split("/")[1] ||
+        "FILE"
+    ).toUpperCase()
+}
 
 type MediaFile = {
+    id: number
     name: string
     file_name: string
     path: string
     size: number
     file_type: string
+    letter_number: string
+    letter_code: string
+    institution_code: string
+    event: string
+    goal_code: string
+    main_certifier: string
+    recipient_organization: string
+    description: string
+    category: string
+    destination_parent: string
+    destination_child: string
+    created_at: string
 }
 
 export default function FolderDetailPage() {
@@ -100,7 +137,7 @@ export default function FolderDetailPage() {
 
                     const response =
                         await axios.get(
-                            `https://api-document.asosiasitigerjakarta.com/api/media/folder/${parent}/${child}/files`
+                            `${BASE_URL}/api/media/folder/${parent}/${child}/files`
                         )
 
                     setFiles(
@@ -223,7 +260,90 @@ export default function FolderDetailPage() {
         )
     }
 
+    //
+    // DELETE FILE
+    //
+    const handleDeleteFile = async (
+        id: number
+    ) => {
+        const result =
+            await Swal.fire({
+                icon: "warning",
 
+                title:
+                    "Hapus File?",
+
+                text: "File yang dihapus tidak dapat dikembalikan.",
+
+                showCancelButton: true,
+
+                confirmButtonText:
+                    "Hapus",
+
+                cancelButtonText:
+                    "Batal",
+
+                confirmButtonColor:
+                    "#ef4444",
+            })
+
+        //
+        // CANCEL
+        //
+        if (!result.isConfirmed)
+            return
+
+        try {
+            //
+            // API
+            //
+            await axios.delete(
+                `${BASE_URL}/api/documents/${id}`
+            )
+
+            //
+            // REMOVE STATE
+            //
+            setFiles((prev) =>
+                prev.filter(
+                    (item) =>
+                        item.id !== id
+                )
+            )
+
+            //
+            // CLOSE PREVIEW
+            //
+            setPreviewFile(null)
+
+            //
+            // SUCCESS
+            //
+            Swal.fire({
+                icon: "success",
+
+                title:
+                    "Berhasil",
+
+                text: "File berhasil dihapus.",
+
+                timer: 1500,
+
+                showConfirmButton: false,
+            })
+        } catch (error) {
+            console.error(error)
+
+            Swal.fire({
+                icon: "error",
+
+                title:
+                    "Gagal",
+
+                text: "Terjadi kesalahan saat menghapus file.",
+            })
+        }
+    }
 
     return (
         <>
@@ -272,7 +392,7 @@ export default function FolderDetailPage() {
                     rounded-3xl
 
                     border
-                    bg-muted/30
+                    bg-white
 
                     px-5 py-4
                 "
@@ -388,7 +508,7 @@ export default function FolderDetailPage() {
 
                             text-center
 
-                            bg-muted/20
+                            bg-white
                         "
                         >
                             <FileText className="w-12 h-12 mx-auto text-muted-foreground" />
@@ -530,31 +650,27 @@ export default function FolderDetailPage() {
                                         {/* QUICK ACTION */}
                                         <div
                                             className="
-                        absolute
-                        top-3
-                        right-3
+        absolute
+        top-3
+        right-3
 
-                        opacity-0
-                        translate-y-1
-
-                        transition-all duration-200
-
-                        group-hover:opacity-100
-                        group-hover:translate-y-0
-                    "
+        flex items-center
+        gap-2
+    "
                                         >
+                                            {/* DOWNLOAD */}
                                             <Button
                                                 size="icon"
                                                 className="
-                            rounded-xl
+            rounded-xl
 
-                            w-9 h-9
+            w-9 h-9
 
-                            bg-white
-                            text-black
+            bg-white
+            text-black
 
-                            hover:bg-white/90
-                        "
+            hover:bg-white/90
+        "
                                                 onClick={(e) => {
                                                     e.stopPropagation()
 
@@ -562,15 +678,117 @@ export default function FolderDetailPage() {
                                                         url: file.path,
 
                                                         filename:
-                                                            file.file_name
-                                                                .split(
-                                                                    "/"
-                                                                )
-                                                                .pop(),
+                                                            file.file_name,
                                                     })
                                                 }}
                                             >
                                                 <Download className="w-4 h-4" />
+                                            </Button>
+
+                                            {/* DELETE */}
+                                            <Button
+                                                size="icon"
+                                                variant="destructive"
+                                                className="
+            rounded-xl
+
+            w-9 h-9
+
+            bg-white
+            text-black
+
+            hover:bg-white/90
+        "
+                                                onClick={async (e) => {
+                                                    e.stopPropagation()
+
+                                                    const result =
+                                                        await Swal.fire({
+                                                            icon: "warning",
+
+                                                            title:
+                                                                "Hapus File?",
+
+                                                            text: "File yang dihapus tidak dapat dikembalikan.",
+
+                                                            showCancelButton: true,
+
+                                                            confirmButtonText:
+                                                                "Hapus",
+
+                                                            cancelButtonText:
+                                                                "Batal",
+
+                                                            confirmButtonColor:
+                                                                "#ef4444",
+                                                        })
+
+                                                    //
+                                                    // CANCEL
+                                                    //
+                                                    if (
+                                                        !result.isConfirmed
+                                                    )
+                                                        return
+
+                                                    try {
+                                                        //
+                                                        // API
+                                                        //
+                                                        await axios.delete(
+                                                            `${BASE_URL}/api/documents/${file.id}`
+                                                        )
+
+                                                        //
+                                                        // REMOVE
+                                                        //
+                                                        setFiles(
+                                                            (
+                                                                prev
+                                                            ) =>
+                                                                prev.filter(
+                                                                    (
+                                                                        item
+                                                                    ) =>
+                                                                        item.id !==
+                                                                        file.id
+                                                                )
+                                                        )
+
+                                                        //
+                                                        // SUCCESS
+                                                        //
+                                                        Swal.fire({
+                                                            icon: "success",
+
+                                                            title:
+                                                                "Berhasil",
+
+                                                            text: "File berhasil dihapus.",
+
+                                                            timer: 1500,
+
+                                                            showConfirmButton: false,
+                                                        })
+                                                    } catch (
+                                                    error
+                                                    ) {
+                                                        console.error(
+                                                            error
+                                                        )
+
+                                                        Swal.fire({
+                                                            icon: "error",
+
+                                                            title:
+                                                                "Gagal",
+
+                                                            text: "Terjadi kesalahan saat menghapus file.",
+                                                        })
+                                                    }
+                                                }}
+                                            >
+                                                <Trash2 className="w-4 h-4" />
                                             </Button>
                                         </div>
                                     </div>
@@ -598,7 +816,10 @@ export default function FolderDetailPage() {
                         mt-1
                     "
                                         >
-                                            {file.file_type}
+                                            {getFileExtension(
+                                                file.file_type,
+                                                file.name
+                                            )}
                                         </p>
 
                                         {/* FOOTER */}
@@ -697,131 +918,464 @@ export default function FolderDetailPage() {
             "
                         >
                             <DialogHeader className="space-y-1">
-                                <DialogTitle className="text-lg md:text-xl">
-                                    {previewFile.file_name}
+                                <DialogTitle className="text-lg md:text-xl line-clamp-1">
+                                    {
+                                        previewFile.file_name
+                                    }
                                 </DialogTitle>
 
                                 <DialogDescription>
-                                    {
-                                        previewFile.file_type
-                                    }
+                                    {getFileExtension(
+                                        previewFile.file_type,
+                                        previewFile.name
+                                    )}
                                 </DialogDescription>
                             </DialogHeader>
                         </div>
 
-                        {/* CONTENT */}
+                        {/* BODY */}
                         <div
                             className="
                 flex-1
 
-                bg-muted/20
+                overflow-hidden
 
-                overflow-auto
-
-                p-5
+                grid
+                grid-cols-1
+                xl:grid-cols-[320px_1fr]
             "
                         >
-                            {/* IMAGE */}
-                            {isImage(
-                                previewFile.file_type
-                            ) && (
-                                    <div
-                                        className="
-                        h-full
+                            {/* SIDEBAR DETAIL */}
+                            <div
+                                className="
+                    border-r
 
-                        flex items-center justify-center
+                    bg-muted/20
+
+                    overflow-y-auto
+
+                    p-5
+
+                    space-y-6
+                "
+                            >
+                                {/* FILE INFO */}
+                                <div className="space-y-4">
+                                    <div>
+                                        <p
+                                            className="
+                                text-xs
+                                text-muted-foreground
+                            "
+                                        >
+                                            Nama File
+                                        </p>
+
+                                        <p
+                                            className="
+                                text-sm
+                                font-semibold
+                                mt-1
+                                break-words
+                            "
+                                        >
+                                            {
+                                                previewFile.file_name
+                                            }
+                                        </p>
+                                    </div>
+
+                                    <div>
+                                        <p
+                                            className="
+                                text-xs
+                                text-muted-foreground
+                            "
+                                        >
+                                            Kategori
+                                        </p>
+
+                                        <p
+                                            className="
+                                text-sm
+                                font-medium
+                                mt-1
+                            "
+                                        >
+                                            {
+                                                previewFile.category
+                                            }
+                                        </p>
+                                    </div>
+
+                                    <div>
+                                        <p
+                                            className="
+                                text-xs
+                                text-muted-foreground
+                            "
+                                        >
+                                            Ukuran File
+                                        </p>
+
+                                        <p
+                                            className="
+                                text-sm
+                                font-medium
+                                mt-1
+                            "
+                                        >
+                                            {formatFileSize(
+                                                previewFile.size
+                                            )}
+                                        </p>
+                                    </div>
+
+                                    <div>
+                                        <p
+                                            className="
+                                text-xs
+                                text-muted-foreground
+                            "
+                                        >
+                                            Folder
+                                        </p>
+
+                                        <p
+                                            className="
+                                text-sm
+                                font-medium
+                                mt-1
+                            "
+                                        >
+                                            {
+                                                previewFile.destination_parent
+                                            }
+                                        </p>
+
+                                        <p
+                                            className="
+                                text-xs
+                                text-muted-foreground
+                                mt-1
+                            "
+                                        >
+                                            {
+                                                previewFile.destination_child
+                                            }
+                                        </p>
+                                    </div>
+                                </div>
+
+                                {/* SURAT */}
+                                <div
+                                    className="
+                        pt-6
+                        border-t
+
+                        space-y-4
                     "
+                                >
+                                    <h3
+                                        className="
+                            text-sm
+                            font-semibold
+                        "
                                     >
-                                        <img
+                                        Informasi Surat
+                                    </h3>
+
+                                    <div>
+                                        <p
+                                            className="
+                                text-xs
+                                text-muted-foreground
+                            "
+                                        >
+                                            Nomor Surat
+                                        </p>
+
+                                        <p
+                                            className="
+                                text-sm
+                                mt-1
+                            "
+                                        >
+                                            {
+                                                previewFile.letter_number
+                                            }
+                                        </p>
+                                    </div>
+
+                                    <div>
+                                        <p
+                                            className="
+                                text-xs
+                                text-muted-foreground
+                            "
+                                        >
+                                            Kode Surat
+                                        </p>
+
+                                        <p
+                                            className="
+                                text-sm
+                                mt-1
+                            "
+                                        >
+                                            {
+                                                previewFile.letter_code
+                                            }
+                                        </p>
+                                    </div>
+
+                                    <div>
+                                        <p
+                                            className="
+                                text-xs
+                                text-muted-foreground
+                            "
+                                        >
+                                            Kode Lembaga
+                                        </p>
+
+                                        <p
+                                            className="
+                                text-sm
+                                mt-1
+                            "
+                                        >
+                                            {
+                                                previewFile.institution_code
+                                            }
+                                        </p>
+                                    </div>
+
+                                    <div>
+                                        <p
+                                            className="
+                                text-xs
+                                text-muted-foreground
+                            "
+                                        >
+                                            Kode Tujuan
+                                        </p>
+
+                                        <p
+                                            className="
+                                text-sm
+                                mt-1
+                            "
+                                        >
+                                            {
+                                                previewFile.goal_code
+                                            }
+                                        </p>
+                                    </div>
+
+                                    <div>
+                                        <p
+                                            className="
+                                text-xs
+                                text-muted-foreground
+                            "
+                                        >
+                                            Kegiatan
+                                        </p>
+
+                                        <p
+                                            className="
+                                text-sm
+                                mt-1
+                            "
+                                        >
+                                            {
+                                                previewFile.event
+                                            }
+                                        </p>
+                                    </div>
+
+                                    <div>
+                                        <p
+                                            className="
+                                text-xs
+                                text-muted-foreground
+                            "
+                                        >
+                                            Pengesah Utama
+                                        </p>
+
+                                        <p
+                                            className="
+                                text-sm
+                                mt-1
+                            "
+                                        >
+                                            {
+                                                previewFile.main_certifier
+                                            }
+                                        </p>
+                                    </div>
+
+                                    <div>
+                                        <p
+                                            className="
+                                text-xs
+                                text-muted-foreground
+                            "
+                                        >
+                                            Organisasi Penerima
+                                        </p>
+
+                                        <p
+                                            className="
+                                text-sm
+                                mt-1
+                            "
+                                        >
+                                            {
+                                                previewFile.recipient_organization
+                                            }
+                                        </p>
+                                    </div>
+
+                                    <div>
+                                        <p
+                                            className="
+                                text-xs
+                                text-muted-foreground
+                            "
+                                        >
+                                            Deskripsi
+                                        </p>
+
+                                        <p
+                                            className="
+                                text-sm
+                                mt-1
+                                leading-relaxed
+                            "
+                                        >
+                                            {
+                                                previewFile.description
+                                            }
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* PREVIEW */}
+                            <div
+                                className="
+                    bg-white
+
+                    overflow-auto
+
+                    p-5
+                "
+                            >
+                                {/* IMAGE */}
+                                {isImage(
+                                    previewFile.file_type
+                                ) && (
+                                        <div
+                                            className="
+                            h-full
+
+                            flex items-center justify-center
+                        "
+                                        >
+                                            <img
+                                                src={
+                                                    previewFile.path
+                                                }
+                                                alt={
+                                                    previewFile.file_name
+                                                }
+                                                className="
+                                max-w-full
+                                max-h-full
+
+                                object-contain
+
+                                rounded-2xl
+                            "
+                                            />
+                                        </div>
+                                    )}
+
+                                {/* VIDEO */}
+                                {isVideo(
+                                    previewFile.file_type
+                                ) && (
+                                        <div
+                                            className="
+                            h-full
+
+                            flex items-center justify-center
+                        "
+                                        >
+                                            <video
+                                                controls
+                                                className="
+                                w-full
+                                h-full
+
+                                rounded-2xl
+
+                                bg-black
+                            "
+                                            >
+                                                <source
+                                                    src={
+                                                        previewFile.path
+                                                    }
+                                                    type={
+                                                        previewFile.file_type
+                                                    }
+                                                />
+                                            </video>
+                                        </div>
+                                    )}
+
+                                {/* PDF */}
+                                {isPdf(
+                                    previewFile.file_type
+                                ) && (
+                                        <iframe
                                             src={
                                                 previewFile.path
                                             }
-                                            alt={
-                                                previewFile.file_name
-                                            }
-                                            className="
-                            max-w-full
-                            max-h-full
-
-                            object-contain
-
-                            rounded-2xl
-                        "
-                                        />
-                                    </div>
-                                )}
-
-                            {/* VIDEO */}
-                            {isVideo(
-                                previewFile.file_type
-                            ) && (
-                                    <div
-                                        className="
-                        h-full
-
-                        flex items-center justify-center
-                    "
-                                    >
-                                        <video
-                                            controls
                                             className="
                             w-full
                             h-full
 
                             rounded-2xl
 
-                            bg-black
+                            bg-white
                         "
-                                        >
-                                            <source
-                                                src={
-                                                    previewFile.path
-                                                }
-                                                type={
-                                                    previewFile.file_type
-                                                }
-                                            />
-                                        </video>
-                                    </div>
-                                )}
+                                        />
+                                    )}
 
-                            {/* PDF */}
-                            {isPdf(
-                                previewFile.file_type
-                            ) && (
-                                    <iframe
-                                        src={
-                                            previewFile.path
-                                        }
-                                        className="
-                        w-full
-                        h-full
+                                {/* OFFICE */}
+                                {isExcel(
+                                    previewFile.file_type
+                                ) && (
+                                        <iframe
+                                            src={`https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(
+                                                previewFile.path
+                                            )}`}
+                                            className="
+                            w-full
+                            h-full
 
-                        rounded-2xl
+                            rounded-2xl
 
-                        bg-white
-                    "
-                                    />
-                                )}
-
-                            {/* OFFICE */}
-                            {isExcel(
-                                previewFile.file_type
-                            ) && (
-                                    <iframe
-                                        src={`https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(
-                                            previewFile.path
-                                        )}`}
-                                        className="
-                        w-full
-                        h-full
-
-                        rounded-2xl
-
-                        bg-white
-                    "
-                                    />
-                                )}
+                            bg-white
+                        "
+                                        />
+                                    )}
+                            </div>
                         </div>
 
                         {/* FOOTER */}
@@ -848,6 +1402,40 @@ export default function FolderDetailPage() {
                                 }
                             >
                                 Tutup
+                            </Button>
+
+                            {/* DELETE */}
+                            <Button
+                                variant="destructive"
+                                className="rounded-xl"
+                                onClick={async () => {
+                                    //
+                                    // CLOSE DIALOG
+                                    //
+                                    setPreviewFile(null)
+
+                                    //
+                                    // WAIT DIALOG CLOSE
+                                    //
+                                    await new Promise(
+                                        (resolve) =>
+                                            setTimeout(
+                                                resolve,
+                                                200
+                                            )
+                                    )
+
+                                    //
+                                    // DELETE
+                                    //
+                                    handleDeleteFile(
+                                        previewFile.id
+                                    )
+                                }}
+                            >
+                                <Trash2 className="w-4 h-4 mr-2" />
+
+                                Hapus
                             </Button>
 
                             {/* DOWNLOAD */}

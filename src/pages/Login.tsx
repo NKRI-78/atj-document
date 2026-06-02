@@ -12,20 +12,15 @@ import { useNavigate } from "react-router-dom"
 
 import { Button } from "@/components/ui/button"
 
-import {
-    Card,
-    CardContent,
-} from "@/components/ui/card"
-
 import { Input } from "@/components/ui/input"
 
 import { Label } from "@/components/ui/label"
 
 import {
-    Mail,
     Lock,
     ArrowRight,
     User,
+    Copyright,
 } from "lucide-react"
 
 import { logger } from "@/lib/logger"
@@ -267,22 +262,72 @@ export default function Login() {
                 </div>
 
                 {/* FOOTER */}
-                <div className="text-sm text-slate-500">
-                    © 2026 Asosiasi Tiger Jakarta
+                <div className="flex items-center gap-1 text-sm text-slate-500">
+                    <Copyright className="h-4 w-4" />
+                    <span>{new Date().getFullYear()} Asosiasi Tiger Jakarta</span>
                 </div>
             </div>
 
             {/* RIGHT */}
             <div
                 className="
-                flex
-                items-center
-                justify-center
-                p-6
-                bg-white
-            "
+        relative
+
+        flex
+        items-center
+        justify-center
+
+        p-6
+
+        overflow-hidden
+    "
             >
-                <div className="w-full max-w-md">
+                {/* BACKGROUND PATTERN */}
+                <div
+                    className="
+            absolute inset-0
+
+            bg-[url('/images/bg-pattern.png')]
+            bg-repeat
+            bg-center
+
+            bg-size-[220px]
+            sm:bg-size-[260px]
+            md:bg-size-[300px]
+
+            blur-[0.5px]
+            scale-105
+        "
+                />
+
+                {/* WHITE OVERLAY */}
+                <div
+                    className="
+            absolute inset-0
+            bg-white/75
+        "
+                />
+
+                {/* LOGIN CARD */}
+                <div
+                    className="
+            relative z-10
+
+            w-full max-w-md
+
+            rounded-3xl
+
+            border border-white/40
+
+            bg-white/70
+
+            backdrop-blur-xl
+
+            shadow-2xl
+
+            p-8
+        "
+                >
 
                     {/* MOBILE LOGO */}
                     <div className="lg:hidden mb-10">
@@ -399,8 +444,9 @@ export default function Login() {
                     </form>
 
                     {/* MOBILE FOOTER */}
-                    <div className="lg:hidden mt-10 text-center text-xs text-slate-400">
-                        © 2026 Asosiasi Tiger Jakarta
+                    <div className="lg:hidden mt-10 flex items-center justify-center gap-1 text-center text-xs text-slate-400">
+                        <Copyright className="h-3 w-3" />
+                        <span>{new Date().getFullYear()} Asosiasi Tiger Jakarta</span>
                     </div>
                 </div>
             </div>

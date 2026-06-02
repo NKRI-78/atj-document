@@ -1,78 +1,273 @@
-import { Card, CardContent } from "@/components/ui/card"
+import { useEffect, useState } from "react"
+
+import axios from "axios"
+
 import {
-    Folder,
+    useNavigate,
+} from "react-router-dom"
+
+import { Card, CardContent } from "@/components/ui/card"
+
+import {
     FileText,
     ImageIcon,
     Video,
+    Folder,
 } from "lucide-react"
+import { BASE_URL } from "@/utils/constant"
 
-const folders = [
-    { name: "Documents", files: 124, icon: FileText },
-    { name: "Images", files: 89, icon: ImageIcon },
-    { name: "Videos", files: 32, icon: Video },
-]
+type DashboardResponse = {
+    stats: {
+        documents: number
+        images: number
+        videos: number
+        total_files: number
+    }
 
-const recentFiles = [
-    {
-        name: "Company_Profile.pdf",
-        size: "2.4 MB",
-    },
-    {
-        name: "UI_Design.fig",
-        size: "8.1 MB",
-    },
-    {
-        name: "Marketing_Banner.png",
-        size: "1.2 MB",
-    },
-    {
-        name: "Presentation_Q2.pptx",
-        size: "4.7 MB",
-    },
-]
+    recent_files: {
+        id: number
+
+        name: string
+
+        category: string
+
+        file_type: string
+
+        size: number
+
+        size_label: string
+
+        gcs_path: string
+
+        parent_folder: string
+
+        folder_name: string
+
+        created_at: string
+
+        status_label: string
+    }[]
+}
 
 export default function Dashboard() {
+    const navigate =
+        useNavigate()
+
+    const [loading, setLoading] =
+        useState(true)
+
+    const [dashboard, setDashboard] =
+        useState<DashboardResponse | null>(
+            null
+        )
+
+    //
+    // FETCH DASHBOARD
+    //
+    const fetchDashboard =
+        async () => {
+            try {
+                setLoading(true)
+
+                const response =
+                    await axios.get(
+                        `${BASE_URL}/api/dashboard?limit=4`
+                    )
+
+                setDashboard(
+                    response.data.data
+                )
+            } catch (error) {
+                console.error(error)
+            } finally {
+                setLoading(false)
+            }
+        }
+
+    useEffect(() => {
+        fetchDashboard()
+    }, [])
+
+    //
+    // STATS
+    //
+    const stats = [
+        {
+            title: "Dokumen",
+
+            total:
+                dashboard?.stats
+                    .documents || 0,
+
+            icon: FileText,
+        },
+
+        {
+            title: "Gambar",
+
+            total:
+                dashboard?.stats
+                    .images || 0,
+
+            icon: ImageIcon,
+        },
+
+        {
+            title: "Video",
+
+            total:
+                dashboard?.stats
+                    .videos || 0,
+
+            icon: Video,
+        },
+
+        {
+            title: "Total File",
+
+            total:
+                dashboard?.stats
+                    .total_files || 0,
+
+            icon: Folder,
+        },
+    ]
+
+    //
+    // FILE ICON
+    //
+    const getFileIcon = (
+        category: string
+    ) => {
+        switch (
+        category.toLowerCase()
+        ) {
+            case "image":
+                return (
+                    <ImageIcon className="w-5 h-5" />
+                )
+
+            case "video":
+                return (
+                    <Video className="w-5 h-5" />
+                )
+
+            default:
+                return (
+                    <FileText className="w-5 h-5" />
+                )
+        }
+    }
+
     return (
         <div className="space-y-8">
-            {/* Heading */}
+            {/* HEADER */}
             <div>
-                <h1 className="text-3xl font-bold">
+                <h1
+                    className="
+                        text-2xl md:text-3xl
+                        font-bold
+                        tracking-tight
+                    "
+                >
                     Dashboard
                 </h1>
 
-                <p className="text-muted-foreground mt-2">
-                    Overview of your storage and assets
+                <p
+                    className="
+                        text-muted-foreground
+                        mt-2
+                    "
+                >
+                    Ringkasan file dan
+                    dokumen organisasi
                 </p>
             </div>
 
-            {/* Stats */}
-            <div className="grid grid-cols-2 xl:grid-cols-3 gap-4">
-                {folders.map((folder) => {
-                    const Icon = folder.icon
+            {/* STATS */}
+            <div
+                className="
+                    grid
+
+                    grid-cols-2
+                    xl:grid-cols-4
+
+                    gap-4
+                "
+            >
+                {stats.map((item) => {
+                    const Icon =
+                        item.icon
 
                     return (
                         <Card
-                            key={folder.name}
-                            className="rounded-3xl hover:shadow-lg transition-all"
+                            key={item.title}
+                            className="
+                                rounded-3xl
+
+                                border
+
+                                shadow-none
+
+                                hover:shadow-md
+
+                                transition-all duration-200
+                            "
                         >
                             <CardContent className="p-5">
                                 <div className="flex items-center justify-between">
+                                    {/* LEFT */}
                                     <div>
-                                        <p className="text-sm text-muted-foreground">
-                                            {folder.name}
+                                        <p
+                                            className="
+                                                text-sm
+                                                text-muted-foreground
+                                            "
+                                        >
+                                            {
+                                                item.title
+                                            }
                                         </p>
 
-                                        <h2 className="text-2xl font-bold mt-1">
-                                            {folder.files}
+                                        <h2
+                                            className="
+                                                text-3xl
+                                                font-bold
+
+                                                mt-2
+                                            "
+                                        >
+                                            {
+                                                item.total
+                                            }
                                         </h2>
 
-                                        <p className="text-xs text-muted-foreground">
-                                            Files
+                                        <p
+                                            className="
+                                                text-xs
+                                                text-muted-foreground
+                                                mt-1
+                                            "
+                                        >
+                                            Total
+                                            file
                                         </p>
                                     </div>
 
-                                    <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center">
-                                        <Icon className="w-5 h-5" />
+                                    {/* ICON */}
+                                    <div
+                                        className="
+                                            w-14 h-14
+
+                                            rounded-2xl
+
+                                            bg-black
+                                            text-white
+
+                                            flex items-center justify-center
+                                        "
+                                    >
+                                        <Icon className="w-6 h-6" />
                                     </div>
                                 </div>
                             </CardContent>
@@ -81,42 +276,315 @@ export default function Dashboard() {
                 })}
             </div>
 
-            {/* Recent Files */}
-            <section>
-                <h2 className="text-xl font-semibold mb-5">
-                    Recent Files
-                </h2>
+            {/* FILE TERBARU */}
+            <section className="space-y-5">
+                {/* TITLE */}
+                <div>
+                    <h2
+                        className="
+                            text-xl
+                            font-semibold
+                        "
+                    >
+                        File Terbaru
+                    </h2>
 
-                <Card className="rounded-3xl overflow-hidden">
-                    <CardContent className="p-0">
-                        {recentFiles.map((file, index) => (
-                            <div
-                                key={index}
-                                className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 px-5 py-5 border-b last:border-none hover:bg-muted/40 transition-colors"
+                    <p
+                        className="
+                            text-sm
+                            text-muted-foreground
+                            mt-1
+                        "
+                    >
+                        File yang baru
+                        ditambahkan
+                    </p>
+                </div>
+
+                {/* LOADING */}
+                {loading && (
+                    <div
+                        className="
+                            grid
+                            grid-cols-1
+                            md:grid-cols-2
+                            gap-4
+                        "
+                    >
+                        {Array.from({
+                            length: 4,
+                        }).map((_, i) => (
+                            <Card
+                                key={i}
+                                className="
+                                    rounded-3xl
+                                "
                             >
-                                <div className="flex items-center gap-4">
-                                    <div className="w-12 h-12 rounded-2xl bg-muted flex items-center justify-center">
-                                        <FileText className="w-5 h-5" />
+                                <CardContent className="p-5">
+                                    <div className="animate-pulse flex items-center gap-4">
+                                        <div
+                                            className="
+                                                w-14 h-14
+                                                rounded-2xl
+                                                bg-muted
+                                            "
+                                        />
+
+                                        <div className="flex-1 space-y-3">
+                                            <div
+                                                className="
+                                                    h-4
+                                                    bg-muted
+                                                    rounded-full
+                                                "
+                                            />
+
+                                            <div
+                                                className="
+                                                    h-3
+                                                    w-24
+                                                    bg-muted
+                                                    rounded-full
+                                                "
+                                            />
+                                        </div>
                                     </div>
-
-                                    <div>
-                                        <p className="font-medium break-all">
-                                            {file.name}
-                                        </p>
-
-                                        <p className="text-sm text-muted-foreground">
-                                            Recently updated
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <span className="text-sm text-muted-foreground">
-                                    {file.size}
-                                </span>
-                            </div>
+                                </CardContent>
+                            </Card>
                         ))}
-                    </CardContent>
-                </Card>
+                    </div>
+                )}
+
+                {/* EMPTY */}
+                {!loading &&
+                    dashboard
+                        ?.recent_files
+                        .length ===
+                    0 && (
+                        <Card className="rounded-3xl">
+                            <CardContent
+                                className="
+                                    p-10
+
+                                    text-center
+                                "
+                            >
+                                <Folder className="w-12 h-12 mx-auto text-muted-foreground" />
+
+                                <h3
+                                    className="
+                                        mt-5
+                                        text-lg
+                                        font-semibold
+                                    "
+                                >
+                                    Belum Ada
+                                    File
+                                </h3>
+
+                                <p
+                                    className="
+                                        text-sm
+                                        text-muted-foreground
+
+                                        mt-2
+                                    "
+                                >
+                                    File terbaru
+                                    akan muncul
+                                    di sini
+                                </p>
+                            </CardContent>
+                        </Card>
+                    )}
+
+                {/* FILE LIST */}
+                {!loading &&
+                    dashboard
+                        ?.recent_files
+                        .length! > 0 && (
+                        <div
+                            className="
+                                grid
+
+                                grid-cols-1
+                                md:grid-cols-2
+
+                                gap-4
+                            "
+                        >
+                            {dashboard?.recent_files.map(
+                                (
+                                    file
+                                ) => {
+                                    //
+                                    // URL FOLDER
+                                    //
+                                    const folderUrl =
+                                        `/folders/${file.parent_folder}/${file.folder_name}`
+
+                                    //
+                                    // EXTENSION
+                                    //
+                                    const extension =
+                                        file.file_type
+                                            .split(
+                                                "/"
+                                            )
+                                            .pop()
+                                            ?.toUpperCase()
+
+                                    return (
+                                        <Card
+                                            key={
+                                                file.id
+                                            }
+                                            onClick={() =>
+                                                navigate(
+                                                    folderUrl
+                                                )
+                                            }
+                                            className="
+                                                rounded-3xl
+
+                                                border
+
+                                                shadow-none
+
+                                                hover:shadow-md
+                                                hover:-translate-y-1
+
+                                                transition-all duration-200
+
+                                                cursor-pointer
+                                            "
+                                        >
+                                            <CardContent className="p-5">
+                                                <div className="flex items-start gap-4">
+                                                    {/* ICON */}
+                                                    <div
+                                                        className="
+                                                            w-14 h-14
+
+                                                            rounded-2xl
+
+                                                            bg-muted
+
+                                                            flex items-center justify-center
+
+                                                            shrink-0
+                                                        "
+                                                    >
+                                                        {getFileIcon(
+                                                            file.category
+                                                        )}
+                                                    </div>
+
+                                                    {/* CONTENT */}
+                                                    <div className="flex-1 min-w-0">
+                                                        {/* NAME */}
+                                                        <h3
+                                                            className="
+                                                                font-semibold
+
+                                                                line-clamp-1
+                                                            "
+                                                        >
+                                                            {
+                                                                file.name
+                                                            }
+                                                        </h3>
+
+                                                        {/* BADGES */}
+                                                        <div
+                                                            className="
+                                                                flex items-center
+                                                                gap-2
+
+                                                                mt-2
+
+                                                                flex-wrap
+                                                            "
+                                                        >
+                                                            {/* SIZE */}
+                                                            <span
+                                                                className="
+                                                                    text-xs
+
+                                                                    px-2 py-1
+
+                                                                    rounded-full
+
+                                                                    bg-muted
+                                                                "
+                                                            >
+                                                                {
+                                                                    file.size_label
+                                                                }
+                                                            </span>
+
+                                                            {/* EXT */}
+                                                            <span
+                                                                className="
+                                                                    text-xs
+
+                                                                    px-2 py-1
+
+                                                                    rounded-full
+
+                                                                    bg-black
+                                                                    text-white
+                                                                "
+                                                            >
+                                                                {
+                                                                    extension
+                                                                }
+                                                            </span>
+                                                        </div>
+
+                                                        {/* STATUS */}
+                                                        <p
+                                                            className="
+                                                                text-xs
+                                                                text-muted-foreground
+
+                                                                mt-3
+                                                            "
+                                                        >
+                                                            {
+                                                                file.status_label
+                                                            }
+                                                        </p>
+
+                                                        {/* FOLDER */}
+                                                        <div
+                                                            className="
+                                                                flex items-center
+                                                                gap-2
+
+                                                                mt-4
+
+                                                                text-sm
+                                                                font-medium
+                                                            "
+                                                        >
+                                                            <Folder className="w-4 h-4" />
+
+                                                            <span className="line-clamp-1">
+                                                                {
+                                                                    file.folder_name
+                                                                }
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </CardContent>
+                                        </Card>
+                                    )
+                                }
+                            )}
+                        </div>
+                    )}
             </section>
         </div>
     )

@@ -1,11 +1,11 @@
+import { BASE_URL } from "@/utils/constant"
 import axios from "axios"
 
 import Cookies from "js-cookie"
 
 export const api =
     axios.create({
-        baseURL:
-            "https://api-document.asosiasitigerjakarta.com",
+        baseURL: BASE_URL,
     })
 
 //
