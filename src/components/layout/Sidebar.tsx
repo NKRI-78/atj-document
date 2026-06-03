@@ -15,6 +15,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { useState } from "react"
 import { useAuth } from "@/hooks/useAuth"
 import Logo from "../common/Logo"
+import Swal from "sweetalert2"
 
 type Props = {
     open?: boolean
@@ -36,8 +37,21 @@ export default function Sidebar({
     const [openLogout, setOpenLogout] =
         useState(false)
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
         logout()
+
+        await Swal.fire({
+            icon: "success",
+
+            title:
+                "Berhasil Logout",
+
+            text: `Sampai jumpa lagi...`,
+
+            timer: 1500,
+
+            showConfirmButton: false,
+        })
 
         navigate("/")
     }
@@ -69,7 +83,7 @@ export default function Sidebar({
                     `
                         fixed inset-0 z-40
 
-                        bg-black/40
+                        bg-red-500/40
                         backdrop-blur-sm
 
                         transition-all duration-300
@@ -208,7 +222,7 @@ export default function Sidebar({
                         `,
                                         isActive
                                             ? `
-                                bg-black
+                                bg-red-500
                                 text-white
 
                                 shadow-lg
@@ -329,7 +343,7 @@ export default function Sidebar({
                     font-semibold
                 "
                             >
-                                ATJ Workspace
+                                ATJ Sekretariat
                             </p>
 
                             <p

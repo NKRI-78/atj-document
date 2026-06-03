@@ -105,6 +105,13 @@ export default function FolderDetailPage() {
         null
     )
 
+    const [previewError, setPreviewError] =
+        useState(false)
+
+    useEffect(() => {
+        setPreviewError(false)
+    }, [previewFile])
+
 
 
     //
@@ -217,6 +224,14 @@ export default function FolderDetailPage() {
         ) ||
         type.includes("xlsx")
 
+    const isOffice = (type: string) =>
+        type.includes("word") ||
+        type.includes("document") ||
+        type.includes("presentation") ||
+        type.includes("powerpoint") ||
+        type.includes("excel") ||
+        type.includes("spreadsheet") ||
+        type.includes("sheet")
 
 
     //
@@ -345,6 +360,48 @@ export default function FolderDetailPage() {
         }
     }
 
+    const PreviewNotAvailable = () => (
+        <div
+            className="
+            w-full
+            h-full
+
+            flex
+            flex-col
+            items-center
+            justify-center
+
+            gap-4
+
+            text-center
+        "
+        >
+            <FileArchive className="w-16 h-16 text-muted-foreground" />
+
+            <div>
+                <h3 className="font-semibold text-lg">
+                    Preview tidak tersedia
+                </h3>
+
+                <p className="text-sm text-muted-foreground mt-1">
+                    File ini tidak dapat dibuka atau tidak mendukung preview.
+                </p>
+            </div>
+
+            <Button
+                onClick={() =>
+                    downloadFile({
+                        url: previewFile!.path,
+                        filename: previewFile!.file_name,
+                    })
+                }
+            >
+                <Download className="w-4 h-4 mr-2" />
+                Download File
+            </Button>
+        </div>
+    )
+
     return (
         <>
             <div className="space-y-6">
@@ -405,7 +462,7 @@ export default function FolderDetailPage() {
 
                             rounded-2xl
 
-                            bg-black
+                            bg-red-500
                             text-white
 
                             flex items-center justify-center
@@ -639,11 +696,11 @@ export default function FolderDetailPage() {
                                             className="
                         absolute inset-0
 
-                        bg-black/0
+                        bg-red-500/0
 
                         transition-all duration-300
 
-                        group-hover:bg-black/10
+                        group-hover:bg-red-500/10
                     "
                                         />
 
@@ -1275,106 +1332,84 @@ export default function FolderDetailPage() {
                 "
                             >
                                 {/* IMAGE */}
-                                {isImage(
-                                    previewFile.file_type
-                                ) && (
-                                        <div
+                                {isImage(previewFile.file_type) && (
+                                    previewError ? (
+                                        <PreviewNotAvailable />
+                                    ) : (
+                                        <img
+                                            src={previewFile.path}
+                                            alt={previewFile.file_name}
+                                            onError={() => setPreviewError(true)}
                                             className="
-                            h-full
-
-                            flex items-center justify-center
-                        "
-                                        >
-                                            <img
-                                                src={
-                                                    previewFile.path
-                                                }
-                                                alt={
-                                                    previewFile.file_name
-                                                }
-                                                className="
-                                max-w-full
-                                max-h-full
-
-                                object-contain
-
-                                rounded-2xl
-                            "
-                                            />
-                                        </div>
-                                    )}
+                                                max-w-full
+                                                max-h-full
+                                                object-contain
+                                                rounded-2xl
+                                            "
+                                        />
+                                    )
+                                )}
 
                                 {/* VIDEO */}
-                                {isVideo(
-                                    previewFile.file_type
-                                ) && (
-                                        <div
+                                {isVideo(previewFile.file_type) && (
+                                    previewError ? (
+                                        <PreviewNotAvailable />
+                                    ) : (
+                                        <video
+                                            controls
+                                            onError={() => setPreviewError(true)}
                                             className="
-                            h-full
-
-                            flex items-center justify-center
-                        "
+                                                w-full
+                                                h-full
+                                                rounded-2xl
+                                                bg-black
+                                            "
                                         >
-                                            <video
-                                                controls
-                                                className="
-                                w-full
-                                h-full
-
-                                rounded-2xl
-
-                                bg-black
-                            "
-                                            >
-                                                <source
-                                                    src={
-                                                        previewFile.path
-                                                    }
-                                                    type={
-                                                        previewFile.file_type
-                                                    }
-                                                />
-                                            </video>
-                                        </div>
-                                    )}
+                                            <source
+                                                src={previewFile.path}
+                                                type={previewFile.file_type}
+                                            />
+                                        </video>
+                                    )
+                                )}
 
                                 {/* PDF */}
-                                {isPdf(
-                                    previewFile.file_type
-                                ) && (
+                                {isPdf(previewFile.file_type) && (
+                                    previewError ? (
+                                        <PreviewNotAvailable />
+                                    ) : (
                                         <iframe
-                                            src={
-                                                previewFile.path
-                                            }
+                                            src={previewFile.path}
+                                            onError={() => setPreviewError(true)}
                                             className="
-                            w-full
-                            h-full
-
-                            rounded-2xl
-
-                            bg-white
-                        "
+                                                w-full
+                                                h-full
+                                                rounded-2xl
+                                                bg-white
+                                            "
                                         />
-                                    )}
+                                    )
+                                )}
 
                                 {/* OFFICE */}
-                                {isExcel(
-                                    previewFile.file_type
-                                ) && (
+                                {isOffice(previewFile.file_type) && (
+                                    previewError ? (
+                                        <PreviewNotAvailable />
+                                    ) : (
                                         <iframe
                                             src={`https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(
                                                 previewFile.path
                                             )}`}
+                                            onError={() => setPreviewError(true)}
                                             className="
-                            w-full
-                            h-full
-
-                            rounded-2xl
-
-                            bg-white
-                        "
+                                                w-full
+                                                h-full
+                                                rounded-2xl
+                                                bg-white
+                                            "
                                         />
-                                    )}
+                                    )
+                                )}
                             </div>
                         </div>
 

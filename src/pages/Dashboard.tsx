@@ -8,6 +8,29 @@ import {
 
 import { Card, CardContent } from "@/components/ui/card"
 
+const getFileExtension = (
+    type: string,
+    name: string
+) => {
+    //
+    // PRIORITAS DARI NAMA FILE
+    //
+    const extension =
+        name.split(".").pop()
+
+    if (extension) {
+        return extension.toUpperCase()
+    }
+
+    //
+    // FALLBACK MIME TYPE
+    //
+    return (
+        type.split("/")[1] ||
+        "FILE"
+    ).toUpperCase()
+}
+
 import {
     FileText,
     ImageIcon,
@@ -261,7 +284,7 @@ export default function Dashboard() {
 
                                             rounded-2xl
 
-                                            bg-black
+                                            bg-red-500
                                             text-white
 
                                             flex items-center justify-center
@@ -532,18 +555,19 @@ export default function Dashboard() {
 
                                                                     rounded-full
 
-                                                                    bg-black
+                                                                    bg-red-500
                                                                     text-white
                                                                 "
                                                             >
-                                                                {
-                                                                    extension
-                                                                }
+                                                                {getFileExtension(
+                                                                    file.file_type,
+                                                                    file.name
+                                                                )}
                                                             </span>
                                                         </div>
 
                                                         {/* STATUS */}
-                                                        <p
+                                                        {/* <p
                                                             className="
                                                                 text-xs
                                                                 text-muted-foreground
@@ -554,7 +578,7 @@ export default function Dashboard() {
                                                             {
                                                                 file.status_label
                                                             }
-                                                        </p>
+                                                        </p> */}
 
                                                         {/* FOLDER */}
                                                         <div

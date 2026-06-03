@@ -72,7 +72,7 @@ export default function FolderListPage() {
 
                                         rounded-2xl
 
-                                        bg-black
+                                        bg-red-500
                                         text-white
 
                                         flex items-center justify-center

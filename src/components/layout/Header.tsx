@@ -35,6 +35,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog"
+import Swal from "sweetalert2"
 
 type Props = {
     onMenuClick?: () => void
@@ -55,10 +56,24 @@ export default function Header({
         setOpenLogout,
     ] = useState(false)
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
         logout()
 
+        await Swal.fire({
+            icon: "success",
+
+            title:
+                "Berhasil Logout",
+
+            text: `Sampai jumpa lagi...`,
+
+            timer: 1500,
+
+            showConfirmButton: false,
+        })
+
         navigate("/")
+
     }
 
     return (
@@ -146,6 +161,7 @@ export default function Header({
                             </Button>
                         </Link>
 
+                        {/* PROFILE */}
                         {/* PROFILE */}
                         <DropdownMenu>
                             <DropdownMenuTrigger
@@ -235,11 +251,83 @@ export default function Header({
                                         Administrator
                                     </p>
                                 </div>
+
+                                <DropdownMenuSeparator />
+
+                                {/* LOGOUT */}
+                                <DropdownMenuItem
+                                    onClick={() =>
+                                        setOpenLogout(
+                                            true
+                                        )
+                                    }
+                                    className="
+                cursor-pointer
+
+                text-red-500
+                focus:text-red-500
+
+                rounded-xl
+                mx-1
+            "
+                                >
+                                    <LogOut className="w-4 h-4 mr-2" />
+
+                                    Logout
+                                </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
                     </div>
                 </div>
             </header>
+            {/* LOGOUT DIALOG */}
+            <Dialog
+                open={openLogout}
+                onOpenChange={
+                    setOpenLogout
+                }
+            >
+                <DialogContent className="rounded-3xl">
+                    <DialogHeader>
+                        <DialogTitle>
+                            Logout
+                        </DialogTitle>
+
+                        <DialogDescription>
+                            Yakin ingin keluar
+                            dari akun?
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    <DialogFooter className="gap-3">
+                        <Button
+                            variant="outline"
+                            className="rounded-xl"
+                            onClick={() =>
+                                setOpenLogout(
+                                    false
+                                )
+                            }
+                        >
+                            Batal
+                        </Button>
+
+                        <Button
+                            className="
+                    rounded-xl
+
+                    bg-red-500
+                    hover:bg-red-600
+                "
+                            onClick={
+                                handleLogout
+                            }
+                        >
+                            Logout
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </>
     )
 }
