@@ -215,56 +215,95 @@ export default function Login() {
         <div className="min-h-screen bg-slate-100 grid lg:grid-cols-2">
 
             {/* LEFT */}
+            {/* LEFT */}
             <div
                 className="
-                hidden lg:flex
-                flex-col
-                justify-between
-                bg-slate-900
-                text-white
-                p-14
-            "
+        hidden lg:flex
+
+        relative
+
+        overflow-hidden
+    "
             >
-                <div>
-                    {/* LOGO */}
-                    <div className="flex items-center gap-4">
-                        <Logo />
+                {/* BG IMAGE */}
+                <div
+                    className="
+            absolute inset-0
 
-                        <div>
-                            <h1 className="font-bold text-xl">
-                                Asosiasi Tiger Jakarta
-                            </h1>
+            bg-[url('/images/bg-login.png')]
 
-                            <p className="text-slate-400 text-sm">
-                                Sistem Administrasi Internal
+            bg-cover
+            bg-center
+            bg-no-repeat
+        "
+                />
+
+                {/* OVERLAY */}
+                <div
+                    className="
+            absolute inset-0
+
+        "
+                />
+
+                {/* CONTENT */}
+                <div
+                    className="
+            relative z-10
+
+            flex flex-col justify-between
+
+            w-full
+
+            p-14
+
+            text-white
+        "
+                >
+                    <div>
+                        {/* LOGO */}
+                        <div className="flex items-center gap-4">
+                            <Logo />
+
+                            <div>
+                                <h1 className="font-bold text-xl">
+                                    Asosiasi Tiger Jakarta
+                                </h1>
+
+                                <p className="text-slate-300 text-sm">
+                                    Sistem Administrasi Internal
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* HERO */}
+                        <div className="mt-24 max-w-xl">
+                            <p className="text-primary font-medium mb-3">
+                                Selamat Datang
+                            </p>
+
+                            <h2 className="text-5xl font-bold leading-tight">
+                                Kelola Dokumen &
+                                Administrasi Dengan Mudah
+                            </h2>
+
+                            <p className="mt-6 text-slate-200 leading-relaxed text-lg">
+                                Platform internal untuk membantu
+                                pengelolaan dokumen, arsip,
+                                dan administrasi organisasi
+                                secara lebih modern dan efisien.
                             </p>
                         </div>
                     </div>
 
-                    {/* HERO */}
-                    <div className="mt-24 max-w-lg">
-                        <p className="text-primary font-medium mb-3">
-                            Selamat Datang
-                        </p>
+                    {/* FOOTER */}
+                    <div className="flex items-center gap-1 text-sm text-slate-300">
+                        <Copyright className="h-4 w-4" />
 
-                        <h2 className="text-5xl font-bold leading-tight">
-                            Kelola Data &
-                            Administrasi Dengan Mudah
-                        </h2>
-
-                        <p className="mt-6 text-slate-300 leading-relaxed">
-                            Platform internal untuk membantu
-                            pengelolaan dokumen, arsip,
-                            dan administrasi organisasi
-                            secara lebih efisien.
-                        </p>
+                        <span>
+                            {new Date().getFullYear()} Asosiasi Tiger Jakarta
+                        </span>
                     </div>
-                </div>
-
-                {/* FOOTER */}
-                <div className="flex items-center gap-1 text-sm text-slate-500">
-                    <Copyright className="h-4 w-4" />
-                    <span>{new Date().getFullYear()} Asosiasi Tiger Jakarta</span>
                 </div>
             </div>
 
@@ -282,9 +321,38 @@ export default function Login() {
         overflow-hidden
     "
             >
-                {/* BACKGROUND IMAGE */}
+                {/* DESKTOP PATTERN */}
                 <div
                     className="
+            hidden lg:block
+
+            absolute inset-0
+
+            bg-[url('/images/bg-pattern.png')]
+            bg-repeat
+            bg-center
+
+            bg-size-[220px]
+            xl:bg-size-[260px]
+        "
+                />
+
+                {/* DESKTOP WHITE OVERLAY */}
+                <div
+                    className="
+            hidden lg:block
+
+            absolute inset-0
+
+            bg-white/80
+        "
+                />
+
+                {/* MOBILE BG */}
+                <div
+                    className="
+            lg:hidden
+
             absolute inset-0
 
             bg-[url('/images/bg-login.png')]
@@ -295,9 +363,11 @@ export default function Login() {
         "
                 />
 
-                {/* DARK OVERLAY */}
+                {/* MOBILE OVERLAY */}
                 <div
                     className="
+            lg:hidden
+
             absolute inset-0
         "
                 />
@@ -313,9 +383,11 @@ export default function Login() {
 
             border border-white/20
 
-            bg-white/95
+            bg-white/92
 
             shadow-2xl
+
+            backdrop-blur-sm
 
             p-8
         "
@@ -436,8 +508,9 @@ export default function Login() {
                     </form>
 
                     {/* MOBILE FOOTER */}
-                    <div className="lg:hidden mt-10 flex items-center justify-center gap-1 text-center text-xs text-slate-400">
+                    <div className="lg:hidden mt-10 flex items-center justify-center gap-1 text-center text-xs text-slate-500">
                         <Copyright className="h-3 w-3" />
+
                         <span>
                             {new Date().getFullYear()} Asosiasi Tiger Jakarta
                         </span>
