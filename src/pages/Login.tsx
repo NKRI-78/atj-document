@@ -282,29 +282,23 @@ export default function Login() {
         overflow-hidden
     "
             >
-                {/* BACKGROUND PATTERN */}
+                {/* BACKGROUND IMAGE */}
                 <div
                     className="
             absolute inset-0
 
-            bg-[url('/images/bg-pattern.png')]
-            bg-repeat
+            bg-[url('/images/bg-login.png')]
+
+            bg-cover
             bg-center
-
-            bg-size-[220px]
-            sm:bg-size-[260px]
-            md:bg-size-[300px]
-
-            blur-[0.5px]
-            scale-105
+            bg-no-repeat
         "
                 />
 
-                {/* WHITE OVERLAY */}
+                {/* DARK OVERLAY */}
                 <div
                     className="
             absolute inset-0
-            bg-white/75
         "
                 />
 
@@ -317,11 +311,9 @@ export default function Login() {
 
             rounded-3xl
 
-            border border-white/40
+            border border-white/20
 
-            bg-white/70
-
-            backdrop-blur-xl
+            bg-white/95
 
             shadow-2xl
 
@@ -376,11 +368,11 @@ export default function Login() {
                                     type="text"
                                     placeholder="Masukkan username"
                                     className="
-                                    pl-10
-                                    h-12
-                                    rounded-xl
-                                    border-slate-300
-                                "
+                            pl-10
+                            h-12
+                            rounded-xl
+                            border-slate-300
+                        "
                                     {...register("username")}
                                 />
                             </div>
@@ -405,11 +397,11 @@ export default function Login() {
                                     type="password"
                                     placeholder="Masukkan password"
                                     className="
-                                    pl-10
-                                    h-12
-                                    rounded-xl
-                                    border-slate-300
-                                "
+                            pl-10
+                            h-12
+                            rounded-xl
+                            border-slate-300
+                        "
                                     {...register("password")}
                                 />
                             </div>
@@ -426,12 +418,12 @@ export default function Login() {
                             type="submit"
                             disabled={loading}
                             className="
-                            w-full
-                            h-12
-                            rounded-xl
-                            text-base
-                            font-medium
-                        "
+                    w-full
+                    h-12
+                    rounded-xl
+                    text-base
+                    font-medium
+                "
                         >
                             {loading
                                 ? "Sedang Masuk..."
@@ -446,7 +438,9 @@ export default function Login() {
                     {/* MOBILE FOOTER */}
                     <div className="lg:hidden mt-10 flex items-center justify-center gap-1 text-center text-xs text-slate-400">
                         <Copyright className="h-3 w-3" />
-                        <span>{new Date().getFullYear()} Asosiasi Tiger Jakarta</span>
+                        <span>
+                            {new Date().getFullYear()} Asosiasi Tiger Jakarta
+                        </span>
                     </div>
                 </div>
             </div>
