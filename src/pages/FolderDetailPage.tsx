@@ -2,7 +2,6 @@ import {
     FileText,
     Folder,
     ArrowLeft,
-    Eye,
     Download,
     FileVideo,
     FileImage,
@@ -211,18 +210,6 @@ export default function FolderDetailPage() {
         type: string
     ) =>
         type.includes("pdf")
-
-    const isExcel = (
-        type: string
-    ) =>
-        type.includes(
-            "spreadsheet"
-        ) ||
-        type.includes("excel") ||
-        type.includes(
-            "sheet"
-        ) ||
-        type.includes("xlsx")
 
     const isOffice = (type: string) =>
         type.includes("word") ||

@@ -195,8 +195,6 @@ export default function FolderPickerModal({
                                         >
                                             {division.children.map(
                                                 (folder) => {
-                                                    const fullPath = `${division.parent} / ${folder}`
-
                                                     const isSelected =
                                                         tempFolder?.parent ===
                                                         division.parent &&

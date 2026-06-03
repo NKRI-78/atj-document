@@ -449,13 +449,6 @@ export default function Dashboard() {
                                     //
                                     // EXTENSION
                                     //
-                                    const extension =
-                                        file.file_type
-                                            .split(
-                                                "/"
-                                            )
-                                            .pop()
-                                            ?.toUpperCase()
 
                                     return (
                                         <Card
